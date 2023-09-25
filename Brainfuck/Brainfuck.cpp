@@ -23,14 +23,17 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::string program;
+    std::string program = "";
+    std::string input = "";
+    std::string temp = "";
     std::stack<size_t> loop_stack;
     std::unordered_map<size_t, size_t> loop_map;
-    size_t ip;
-    std::vector<unsigned char> memory;
+    size_t ip = 0;
+    std::vector<unsigned char> memory = {0};
+    size_t im = 0;
     
-    while (file.good())
-        file >> program;
+    while (std::getline(file, temp))
+        program += temp;
 
     file.close();
 
@@ -52,6 +55,67 @@ int main(int argc, char** argv)
     {
         std::cout << "Missing brackets in the code" << std::endl;
         return 1;
+    }
+
+    ip = 0;
+
+    while(ip < program.size())
+    {
+        switch(program[ip])
+        {
+            case '+':
+            {
+                memory[im]++;
+                break;
+            }
+            case '-':
+            {
+                memory[im]--;
+                break;
+            }
+            case '>':
+            {
+                im++;
+                if (im == memory.size())
+                    memory.push_back(0);
+                break;
+            }
+            case '<':
+            {
+                if(im > 0)
+                    im--;
+                break;
+            }
+            case '.':
+            {
+                std::cout << memory[im];
+                break;
+            }
+            case ',':
+            {
+                if(!input.empty())
+                {
+                    std::cin >> input;
+                    input.push_back('\n');
+                }
+                memory[im] = input[0];
+                input.erase(0, 1);
+                break;
+            }
+            case '[':
+            {
+                if (!memory[im])
+                    ip = loop_map[ip];
+                break;
+            }
+            case ']':
+            {
+                if (memory[im])
+                    ip = loop_map[ip];
+                break;
+            }
+        }
+        ip++;
     }
 
     return 0;
