@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include <vector>
 
 int main(int argc, char** argv)
 {
@@ -12,7 +13,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::string program;
     std::ifstream file;
 
     file.open(std::string(argv[1])); 
@@ -22,12 +22,37 @@ int main(int argc, char** argv)
         std::cout << "File path not valid" << std::endl;
         return 1;
     }
+
+    std::string program;
+    std::stack<size_t> loop_stack;
+    std::unordered_map<size_t, size_t> loop_map;
+    size_t ip;
+    std::vector<unsigned char> memory;
     
-    file >> program;
+    while (file.good())
+        file >> program;
 
     file.close();
 
-    std::cout << program << std::endl;
+    for (ip = 0; ip < program.size(); ip++)
+    {
+        if (program[ip] == '[')
+        {
+            loop_stack.push(ip);
+        }
+        else if (program[ip] == ']')
+        {
+            loop_map[ip] = loop_stack.top();
+            loop_map[loop_stack.top()] = ip;
+            loop_stack.pop();
+        }
+    }
+
+    if(!loop_stack.empty())
+    {
+        std::cout << "Missing brackets in the code" << std::endl;
+        return 1;
+    }
 
     return 0;
 }
