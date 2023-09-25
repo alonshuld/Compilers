@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     std::ifstream file;
     std::string program = "";
     std::string temp = "";
-    size_t num = 0;
+    char num = 0;
 
     file.open(std::string(argv[1])); 
 
